@@ -1,0 +1,26 @@
+# 基于Ubuntu镜像
+FROM ubuntu:latest
+
+# 更新软件包列表并安装OpenSSH服务器
+RUN apt-get update && \
+    apt-get install -y openssh-server
+
+# 创建运行SFTP服务所需的目录
+RUN mkdir /var/run/sshd
+
+# 添加用户并设置密码（这里使用sftpuser作为示例）
+RUN useradd -m user && \
+    echo "user:passwd" | chpasswd
+
+# 为SFTP配置SSH，使用内置的SFTP子系统（sshd_config文件中）
+RUN echo 'Match User sftpuser' >> /etc/ssh/sshd_config && \
+    echo 'ForceCommand internal-sftp' >> /etc/ssh/sshd_config && \
+    echo 'AllowTCPForwarding no' >> /etc/ssh/sshd_config && \
+    echo 'X11Forwarding no' >> /etc/ssh/sshd_config && \
+    echo 'PasswordAuthentication yes' >> /etc/ssh/sshd_config
+
+# 容器需要开放22端口
+EXPOSE 22
+
+# 启动SSH服务
+CMD ["/usr/sbin/sshd", "-D"]

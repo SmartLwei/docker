@@ -12,7 +12,7 @@ services:
       - MYSQL_ROOT_PASSWORD=ThisIsAComplicatePassWord
     ports:
       - "3306:3306"
-    restart: always
+#    restart: always
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
   redis:
@@ -21,4 +21,12 @@ services:
     build: ./redis
     ports:
       - "6379:6379"
-    restart: always
+#    restart: always
+
+  sftp:
+    image: sftp:1
+    container_name: sftp
+    build: ./sftp
+    ports:
+      - "2001:22"
+#    restart: always
