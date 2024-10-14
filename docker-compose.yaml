@@ -12,7 +12,7 @@ services:
       - MYSQL_ROOT_PASSWORD=ThisIsAComplicatePassWord
     ports:
       - "3306:3306"
-#    restart: always
+    restart: always
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
   redis:
@@ -21,7 +21,7 @@ services:
     build: ./redis
     ports:
       - "6379:6379"
-#    restart: always
+    restart: always
 
   sftp:
     image: sftp:1
@@ -29,4 +29,13 @@ services:
     build: ./sftp
     ports:
       - "2001:22"
+    network_mode: bridge
 #    restart: always
+    # networks:
+    #   my_network:
+    #     aliases:
+    #       - sftp_container  # 这是容器的别名，可以用来 ping 通
+
+# networks:
+#   my_network:
+#     driver: bridge
