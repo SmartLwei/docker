@@ -22,20 +22,3 @@ services:
     ports:
       - "6379:6379"
     restart: always
-
-  sftp:
-    image: sftp:1
-    container_name: sftp
-    build: ./sftp
-    ports:
-      - "2001:22"
-    network_mode: bridge
-#    restart: always
-    # networks:
-    #   my_network:
-    #     aliases:
-    #       - sftp_container  # 这是容器的别名，可以用来 ping 通
-
-# networks:
-#   my_network:
-#     driver: bridge
