@@ -1,111 +1,102 @@
 [client]
-port=3306
+port = 3306
 socket = /var/run/mysqld/mysqld.sock
+default-character-set = utf8mb4
+
 [mysql]
 no-auto-rehash
-auto-rehash
 default-character-set = utf8mb4
+
 [mysqld]
-###basic settings
+# Basic settings
 server-id = 2
 pid-file = /var/run/mysqld/mysqld.pid
 socket = /var/run/mysqld/mysqld.sock
 datadir = /var/lib/mysql
-#log-error = /var/lib/mysql/error.log
-# By default we only accept connections from localhost
-#bind-address = 127.0.0.1
-# Disabling symbolic-links is recommended to prevent assorted security risks
-symbolic-links = 0
+port = 3306
+
+# Character set and collation
 character-set-server = utf8mb4
-sql_mode="NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
-default-storage-engine = INNODB
-transaction_isolation = READ-COMMITTED
-auto_increment_offset = 1
+collation-server = utf8mb4_unicode_ci
+init_connect = 'SET NAMES utf8mb4'
+
+# Connection settings
+max_connections = 1000
 connect_timeout = 20
-max_connections = 3500
-wait_timeout = 86400
-interactive_timeout = 86400
-interactive_timeout = 7200
-log_bin_trust_function_creators = 1
-wait_timeout = 7200
-sort_buffer_size = 32M
-join_buffer_size = 128M
-max_allowed_packet = 1024M
-tmp_table_size = 2097152
-explicit_defaults_for_timestamp = 1
-read_buffer_size = 16M
-read_rnd_buffer_size = 32M
-query_cache_type = 1
-query_cache_size = 2M
-table_open_cache = 1500
-table_definition_cache = 1000
-thread_cache_size = 768
-back_log = 3000
-open_files_limit = 65536
+wait_timeout = 28800
+interactive_timeout = 28800
+max_allowed_packet = 256M
+
+# Security settings
 skip-name-resolve
-########log settings########
-log-output = FILE
-general_log = ON
-general_log_file = /var/lib/mysql/general.log
+bind-address = 0.0.0.0
+
+# Storage engine
+default-storage-engine = InnoDB
+transaction_isolation = READ-COMMITTED
+
+# Query cache (disabled in MySQL 8.0)
+# query_cache_type and query_cache_size are removed as they're deprecated
+
+# Buffer settings
+sort_buffer_size = 4M
+join_buffer_size = 4M
+read_buffer_size = 2M
+read_rnd_buffer_size = 8M
+tmp_table_size = 64M
+max_heap_table_size = 64M
+
+# Table settings
+table_open_cache = 2000
+table_definition_cache = 1400
+thread_cache_size = 100
+open_files_limit = 65535
+
+# Log settings
+log_error = /var/lib/mysql/error.log
 slow_query_log = ON
-slow_query_log_file = /var/lib/mysql/slowquery.log
-long_query_time = 10
-#log-error=/var/lib/mysql/error.log
+slow_query_log_file = /var/lib/mysql/slow.log
+long_query_time = 2
 log_queries_not_using_indexes = OFF
-log_throttle_queries_not_using_indexes = 0
-#expire_logs_days = 120
-min_examined_row_limit = 100
-########innodb settings########
-innodb_io_capacity = 4000
-innodb_io_capacity_max = 8000
-innodb_buffer_pool_size = 6144M
-innodb_file_per_table = on
-innodb_buffer_pool_instances = 20
-innodb_buffer_pool_load_at_startup = 1
-innodb_buffer_pool_dump_at_shutdown = 1
-innodb_log_file_size = 300M
-innodb_log_files_in_group = 2
+
+# Binary log settings
+log_bin = mysql-bin
+binlog_format = ROW
+binlog_expire_logs_seconds = 604800
+max_binlog_size = 100M
+
+# InnoDB settings
+innodb_buffer_pool_size = 1G
+innodb_buffer_pool_instances = 8
+innodb_log_file_size = 256M
 innodb_log_buffer_size = 16M
-innodb_undo_logs = 128
-#innodb_undo_tablespaces = 3
-#innodb_undo_log_truncate = 1
-#innodb_max_undo_log_size = 2G
-innodb_flush_method = O_DIRECT
-innodb_flush_neighbors = 1
-innodb_purge_threads = 4
-innodb_large_prefix = 1
-innodb_thread_concurrency = 64
-innodb_print_all_deadlocks = 1
-innodb_strict_mode = 1
-innodb_sort_buffer_size = 64M
 innodb_flush_log_at_trx_commit = 1
-innodb_autoextend_increment = 64
-innodb_concurrency_tickets = 5000
-innodb_old_blocks_time = 1000
-innodb_open_files = 65536
-innodb_stats_on_metadata = 0
-innodb_file_per_table = 1
-innodb_checksum_algorithm = 0
-#innodb_data_file_path = ibdata1:60M;ibdata2:60M;autoextend:max:1G
-innodb_data_file_path = ibdata1:12M:autoextend
-#innodb_temp_data_file_path = ibtmp1:500M:autoextend:max:20G
-#innodb_buffer_pool_dump_pct = 40
-#innodb_page_cleaners = 4
-#innodb_purge_rseg_truncate_frequency = 128
-binlog_gtid_simple_recovery = 1
-#log_timestamps=system
-##############
-delayed_insert_limit = 100
-delayed_insert_timeout = 300
-delayed_queue_size = 1000
-delay_key_write = ON
-disconnect_on_expired_password = ON
-div_precision_increment = 4
-end_markers_in_json = OFF
-eq_range_index_dive_limit = 10
-innodb_adaptive_flushing = ON
-innodb_adaptive_hash_index = ON
-innodb_adaptive_max_sleep_delay = 150000
-#innodb_additional_mem_pool_size = 2097152
-innodb_autoextend_increment = 64
-innodb_autoinc_lock_mode = 1
+innodb_flush_method = O_DIRECT
+innodb_file_per_table = ON
+innodb_open_files = 400
+innodb_io_capacity = 400
+innodb_io_capacity_max = 2000
+innodb_thread_concurrency = 0
+innodb_read_io_threads = 4
+innodb_write_io_threads = 4
+innodb_purge_threads = 4
+innodb_page_cleaners = 4
+innodb_lock_wait_timeout = 50
+innodb_print_all_deadlocks = ON
+
+# Performance Schema
+performance_schema = ON
+performance_schema_max_table_instances = 400
+performance_schema_max_sql_text_length = 4096
+
+# MySQL 8.0 specific settings
+mysqlx_port = 33060
+mysqlx_socket = /var/run/mysqld/mysqlx.sock
+default_authentication_plugin = mysql_native_password
+
+# Disable symbolic links for security
+symbolic-links = 0
+
+# Enable general log for debugging (disable in production)
+general_log = OFF
+general_log_file = /var/lib/mysql/general.log

@@ -1,24 +1,53 @@
-version: '3'
-
 services:
   mysql:
-    image: mysql:1
+    image: mysql:8.0
     container_name: mysql
-    build: ./mysql
-    volumes:
-      - ~/docker_data/mysql/data:/var/lib/mysql
-      - ~/docker_data/mysql/init:/docker-entrypoint-initdb.d/
+    restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD=ThisIsAComplicatePassWord
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-ThisIsAComplicatePassWord}
+      MYSQL_DATABASE: test
+      MYSQL_USER: test
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-123456}
     ports:
       - "3306:3306"
-    restart: always
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/mysqld.cnf:/etc/mysql/conf.d/mysqld.cnf
+      - ./mysql/test.sql:/docker-entrypoint-initdb.d/test.sql
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    networks:
+      - app-network
+    security_opt:
+      - no-new-privileges:true
 
   redis:
-    image: redis:1
+    image: redis:7-alpine
     container_name: redis
-    build: ./redis
+    restart: always
     ports:
       - "6379:6379"
-    restart: always
+    volumes:
+      - redis_data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - app-network
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  app-network:
+    driver: bridge
